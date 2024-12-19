@@ -5,8 +5,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,10 +19,12 @@ import coil3.svg.SvgDecoder
 import coil3.util.DebugLogger
 import com.xczcdjx.word.router.Routes
 import com.xczcdjx.word.screen.Home
+import com.xczcdjx.word.screen.SplashScreen
 import com.xczcdjx.word.screen.Test
 import com.xczcdjx.word.ui.theme.PracticeWordTheme
 import dagger.hilt.android.AndroidEntryPoint
 import okio.FileSystem
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,11 +38,11 @@ class MainActivity : ComponentActivity() {
                 }
                 val controller = rememberNavController()
                 NavHost(navController = controller,
-                    startDestination = Routes.Home.route,
+                    startDestination = Routes.Splash.route,
                     enterTransition = {
                         slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left,
                             // 修改过渡时间
-                            animationSpec = tween(500)
+//                            animationSpec = tween(500)
                         )
                     },
                     exitTransition = {
@@ -54,6 +54,13 @@ class MainActivity : ComponentActivity() {
                     popExitTransition = {
                         slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Right)
                     }) {
+                    composable(Routes.Splash.route) {
+                        SplashScreen() {
+                            controller.navigate(Routes.Home.route){
+                                popUpTo(Routes.Splash.route) { inclusive = true }
+                            }
+                        }
+                    }
                     composable(Routes.Home.route) {
                         Home() {
                             controller.navigate(Routes.Test.route)
