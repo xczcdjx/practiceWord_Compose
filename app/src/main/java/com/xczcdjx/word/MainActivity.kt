@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 }
                 val controller = rememberNavController()
                 NavHost(navController = controller,
-                    startDestination = Routes.Splash.route,
+                    startDestination = Routes.Home.route,
                     enterTransition = {
                         slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Left,
                             // 修改过渡时间
