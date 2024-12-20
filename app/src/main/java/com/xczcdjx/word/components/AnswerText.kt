@@ -31,7 +31,7 @@ fun AnswerText(
     modifier: Modifier = Modifier,
     click: () -> Unit
 ) {
-    var curAnswer by remember { mutableStateOf(AnswerEnum.Default) }
+    /*var curAnswer by remember { mutableStateOf(AnswerEnum.Default) }
     LaunchedEffect(ansS) {
         if (ansS==AnswerStatusEnum.Answering){
             if (tit == rightT) {
@@ -43,6 +43,19 @@ fun AnswerText(
             }
         }else{
             curAnswer = AnswerEnum.Default
+        }
+    }*/
+    // 优化监测重组值
+    val curAnswer = remember(ansS) {
+        when (ansS) {
+            AnswerStatusEnum.Answering -> {
+                when (tit) {
+                    rightT -> AnswerEnum.Right
+                    selectT -> AnswerEnum.Error
+                    else -> AnswerEnum.Default
+                }
+            }
+            else -> AnswerEnum.Default
         }
     }
     Text(
