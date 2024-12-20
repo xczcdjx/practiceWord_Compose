@@ -14,7 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xczcdjx.word.R
+import com.xczcdjx.word.components.ShowTest
 import com.xczcdjx.word.components.StatusBtn
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.viewmodel.HomeViewmodel
@@ -62,16 +70,40 @@ fun Home(
                 modifier
                     .size(370.dp, 180.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White),
+                    .background(Color.White)
+                    .padding(horizontal = 20.dp, vertical = 30.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-
+                ShowTest("正确率", Icons.Outlined.CheckCircle) {
+                    Text(stringResource(R.string.word_right, vm.rightRate))
+                }
+                ShowTest("进度", Icons.Default.Refresh) {
+                    LinearProgressIndicator({
+                        (vm.rightC/vm.titCount.toFloat()).toFloat()
+                    },modifier.width(100.dp))
+                }
+                ShowTest("个数", Icons.Default.Add) {
+                    Text(
+                        vm.titCount.toString(),
+                        modifier
+                            .size(100.dp, 25.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(Color(0x8f666666)),
+                        lineHeight = 25.sp,
+                        color = Color.White,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                ShowTest("用时", Icons.Outlined.DateRange) {
+                    Text("00:00:00")
+                }
             }
             Column(
                 modifier.padding(horizontal = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(vm.curTopic.word, fontWeight = FontWeight.Bold, fontSize = 50.sp)
-                Text(vm.curTopic.sentence, color = Color.Gray)
+                Text(vm.curTopic.sentence, color = Color.Gray, textAlign = TextAlign.Center)
             }
             Column(
                 modifier.size(400.dp, 240.dp)
