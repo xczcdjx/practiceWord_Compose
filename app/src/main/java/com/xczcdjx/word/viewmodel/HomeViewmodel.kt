@@ -9,8 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.lifecycle.ViewModel
+import com.xczcdjx.word.constants.AnswerStatusEnum
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.constants.getRandomQuestions
+import kotlinx.coroutines.delay
 
 class HomeViewmodel(private val ctx: Context) : ViewModel() {
     var titCount: Int by mutableIntStateOf(10)
@@ -20,24 +22,48 @@ class HomeViewmodel(private val ctx: Context) : ViewModel() {
     val curTopic by derivedStateOf { totalTopics[curIndex] }
     var practiceStatus: StatusEnumBtn by mutableStateOf(StatusEnumBtn.Stop)
         private set
+    var answerStatus: AnswerStatusEnum by mutableStateOf(AnswerStatusEnum.Answered)
+        private set
     var rightC: Int by mutableIntStateOf(0)
         private set
     var answerC: Int by mutableIntStateOf(0)
+        private set
+    var selectC: String by mutableStateOf("")
         private set
     val rightRate by derivedStateOf {
         if (answerC == 0) "0" else String.format("%.2f", rightC.toFloat() / answerC * 100)
     }
     fun updatePS(v: StatusEnumBtn) {
         practiceStatus = v
+        if (v == StatusEnumBtn.Stop) {
+            clear()
+        }
+    }
+    fun clear() {
+        practiceStatus = StatusEnumBtn.Stop
+        curIndex = 0
+        rightC = 0
+        answerC = 0
     }
 
-    fun updateCurIndex(i: Int) {
+    suspend fun updateCurIndex(rightS: String, answerS: String) {
         if (practiceStatus == StatusEnumBtn.Running) {
+            selectC = answerS
+            answerC++
+            if (rightS == answerS) {
+                this.rightC++
+            }
             if (curIndex < titCount - 1) {
-                curIndex += i
+                answerStatus = AnswerStatusEnum.Answering
+                delay(500)
+                answerStatus = AnswerStatusEnum.Answered
+                // 索引递增
+                curIndex++
+                selectC = ""
             } else {
-                practiceStatus = StatusEnumBtn.Stop
-                curIndex = 0
+                Toast.makeText(ctx,"答完了",Toast.LENGTH_SHORT).show()
+                delay(500)
+                clear()
             }
         }else{
             Toast.makeText(ctx, buildAnnotatedString {
