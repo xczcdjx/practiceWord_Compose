@@ -56,7 +56,11 @@ fun Home(
         )
     ), goTest: () -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()/*DisposableEffect(vm.practiceStatus) {
+        onDispose {
+
+        }
+    }*/
     Box {
         Image(
             painter = painterResource(R.drawable.img_practice_bg),
@@ -65,20 +69,27 @@ fun Home(
             modifier = Modifier.fillMaxSize()
         )
         Column(
-            modifier.fillMaxSize(),
+            modifier
+                .fillMaxSize()
+                .padding(vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Column(
                 modifier
+                    .padding(horizontal = 15.dp)
                     .size(370.dp, 180.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
-                    .padding(horizontal = 20.dp, vertical = 30.dp),
+                    .padding(horizontal = 20.dp, vertical = 20.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 ShowTest("正确率", Icons.Outlined.CheckCircle) {
-                    Text(stringResource(R.string.word_right, vm.rightRate))
+                    Text(
+                        stringResource(R.string.word_right, vm.rightRate),
+                        modifier.width(100.dp),
+                        textAlign = TextAlign.Center
+                    )
                 }
                 ShowTest("进度", Icons.Default.Refresh) {
                     LinearProgressIndicator({
@@ -98,7 +109,7 @@ fun Home(
                     )
                 }
                 ShowTest("用时", Icons.Outlined.DateRange) {
-                    Text("00:00:00")
+                    Text("00:00:00", modifier.width(100.dp), textAlign = TextAlign.Center)
                 }
             }
             Column(

@@ -13,6 +13,7 @@ import com.xczcdjx.word.constants.AnswerStatusEnum
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.constants.getRandomQuestions
 import kotlinx.coroutines.delay
+import java.util.Timer
 
 class HomeViewmodel(private val ctx: Context) : ViewModel() {
     var titCount: Int by mutableIntStateOf(10)
@@ -33,6 +34,8 @@ class HomeViewmodel(private val ctx: Context) : ViewModel() {
     val rightRate by derivedStateOf {
         if (answerC == 0) "0" else String.format("%.2f", rightC.toFloat() / answerC * 100)
     }
+    val expandTime= mutableIntStateOf(0)
+
     fun updatePS(v: StatusEnumBtn) {
         practiceStatus = v
         if (v == StatusEnumBtn.Stop) {
