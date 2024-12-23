@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun ShowTest(
@@ -29,7 +30,7 @@ fun ShowTest(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, null, modifier.size(18.dp))
-            Text(tit, modifier.padding(horizontal = 10.dp), fontWeight = FontWeight(500))
+            Text(tit, modifier.padding(horizontal = 5.dp), fontSize = 15.sp, fontWeight = FontWeight(500))
         }
         child()
     }
