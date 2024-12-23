@@ -5,9 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,22 +54,23 @@ import java.util.TimerTask
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
 fun Home(
+    pad:PaddingValues,
     modifier: Modifier = Modifier, vm: HomeViewmodel = viewModel(
         factory = VMFactory(
             LocalContext.current
         )
-    ), goTest: () -> Unit = {}
+    ), goLogin: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
+    // 计时器处理
     DisposableEffect(vm.practiceStatus) {
         val timer=Timer()
         var f:Boolean=false
         when(vm.practiceStatus){
             StatusEnumBtn.Stop-> {
                 timer.cancel()
-                vm.expandTime.value=0
+                vm.expandTime.longValue=0
             }
             StatusEnumBtn.Running->{
                 f=false
@@ -89,7 +92,7 @@ fun Home(
             timer.cancel()
         }
     }
-    Box {
+    Box(modifier = modifier.padding(bottom = pad.calculateBottomPadding())) {
         Image(
             painter = painterResource(R.drawable.img_practice_bg),
             contentDescription = null,
@@ -99,7 +102,7 @@ fun Home(
         Column(
             modifier
                 .fillMaxSize()
-                .padding(vertical = 10.dp),
+                .padding(top=pad.calculateTopPadding(),),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
@@ -141,7 +144,7 @@ fun Home(
                 }
             }
             Column(
-                modifier.padding(horizontal = 20.dp),
+                modifier.padding(horizontal = 20.dp).height(100.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(vm.curTopic.word, fontWeight = FontWeight.Bold, fontSize = 50.sp)
