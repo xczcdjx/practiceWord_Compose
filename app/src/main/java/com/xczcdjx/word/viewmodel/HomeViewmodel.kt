@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.buildAnnotatedString
@@ -13,6 +14,7 @@ import com.xczcdjx.word.constants.AnswerStatusEnum
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.constants.getRandomQuestions
 import kotlinx.coroutines.delay
+import java.util.Locale
 import java.util.Timer
 
 class HomeViewmodel(private val ctx: Context) : ViewModel() {
@@ -34,7 +36,7 @@ class HomeViewmodel(private val ctx: Context) : ViewModel() {
     val rightRate by derivedStateOf {
         if (answerC == 0) "0" else String.format("%.2f", rightC.toFloat() / answerC * 100)
     }
-    val expandTime= mutableIntStateOf(0)
+    var expandTime= mutableLongStateOf(0L)
 
     fun updatePS(v: StatusEnumBtn) {
         practiceStatus = v
@@ -75,5 +77,21 @@ class HomeViewmodel(private val ctx: Context) : ViewModel() {
                 append("答题")
             }, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun formatTime(timeInMillis: Long): String {
+        val hours = timeInMillis / (1000 * 60 * 60) % 24
+        val minutes = timeInMillis / (1000 * 60) % 60
+        val seconds = timeInMillis / 1000 % 60
+        val milliseconds = timeInMillis % 1000
+
+        return String.format(
+            Locale.getDefault(),
+            "%02d:%02d:%02d.%03d",
+            hours,
+            minutes,
+            seconds,
+            milliseconds
+        )
     }
 }

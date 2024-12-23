@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +45,10 @@ import com.xczcdjx.word.components.StatusBtn
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.viewmodel.HomeViewmodel
 import com.xczcdjx.word.viewmodel.VMFactory
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Timer
+import java.util.TimerTask
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,11 +60,35 @@ fun Home(
         )
     ), goTest: () -> Unit = {}
 ) {
-    val scope = rememberCoroutineScope()/*DisposableEffect(vm.practiceStatus) {
-        onDispose {
-
+    val scope = rememberCoroutineScope()
+    DisposableEffect(vm.practiceStatus) {
+        val timer=Timer()
+        var f:Boolean=false
+        when(vm.practiceStatus){
+            StatusEnumBtn.Stop-> {
+                timer.cancel()
+                vm.expandTime.value=0
+            }
+            StatusEnumBtn.Running->{
+                f=false
+                timer.schedule(object : TimerTask() {
+                    override fun run() {
+                        if (f) {
+                            println("Task is paused") // 实际逻辑
+                        } else {
+                            vm.expandTime.longValue+=1
+                        }
+                    }
+                },0,1)
+            }
+            else ->{
+                f=true
+            }
         }
-    }*/
+        onDispose {
+            timer.cancel()
+        }
+    }
     Box {
         Image(
             painter = painterResource(R.drawable.img_practice_bg),
@@ -87,20 +115,20 @@ fun Home(
                 ShowTest("正确率", Icons.Outlined.CheckCircle) {
                     Text(
                         stringResource(R.string.word_right, vm.rightRate),
-                        modifier.width(100.dp),
+                        modifier.width(120.dp),
                         textAlign = TextAlign.Center
                     )
                 }
                 ShowTest("进度", Icons.Default.Refresh) {
                     LinearProgressIndicator({
                         (vm.answerC / vm.titCount.toFloat())
-                    },modifier.width(100.dp))
+                    },modifier.width(120.dp))
                 }
                 ShowTest("个数", Icons.Default.Add) {
                     Text(
                         vm.titCount.toString(),
                         modifier
-                            .size(100.dp, 25.dp)
+                            .size(120.dp, 25.dp)
                             .clip(CircleShape)
                             .background(Color(0x8f666666)),
                         lineHeight = 25.sp,
@@ -109,7 +137,7 @@ fun Home(
                     )
                 }
                 ShowTest("用时", Icons.Outlined.DateRange) {
-                    Text("00:00:00", modifier.width(100.dp), textAlign = TextAlign.Center)
+                    Text(vm.formatTime(vm.expandTime.longValue), modifier.width(120.dp), textAlign = TextAlign.Center)
                 }
             }
             Column(
