@@ -13,14 +13,27 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
 
 object Network {
-    private const val baseUrl = ""
+    private const val baseUrl = "http://192.168.124.47:3000/word/"
+    // 用于存储 token
+    @Volatile
+    private var token: String? = ""
 
+    // 提供一个方法设置 token
+    fun setToken(newToken: String) {
+        token = newToken
+    }
     // 创建一个全局拦截器
     private val globalInterceptor = object : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
+            val newRequest = request.newBuilder().apply {
+                token?.let {
+//                    header("Authorization", "Bearer $it")
+                    header("token", it) // 添加 Bearer token
+                }
+            }.build()
             try {
-                val response = chain.proceed(request)
+                val response = chain.proceed(newRequest)
                 // 检查响应是否成功
                 if (listOf(200, 201).contains(response.code)) {
                     // 全局成功处理，例如记录日志或统计数据

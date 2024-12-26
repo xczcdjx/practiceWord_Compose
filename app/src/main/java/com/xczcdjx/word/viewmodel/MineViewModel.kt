@@ -11,17 +11,28 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.xczcdjx.word.components.MItem
 import com.xczcdjx.word.entity.UserEntity
+import com.xczcdjx.word.service.MineService
 import com.xczcdjx.word.share.UserShareView
+import com.xczcdjx.word.utils.safeService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MineViewModel @Inject constructor(val user:UserShareView):ViewModel(){
     val isLogin by derivedStateOf { user.isLogin }
-    val userInfo by mutableStateOf<UserEntity>(UserEntity("djx","https://limmerence.store/static/media/2024/09/12/mobx-1726108688108.png"))
+    var userInfo by mutableStateOf<UserEntity>(UserEntity("djx","https://limmerence.store/static/media/2024/09/12/mobx-1726108688108.png"))
+    val service=MineService.instance()
     val mineList:List<MItem> = listOf(
         MItem("record","打卡记录", Icons.AutoMirrored.Outlined.ReceiptLong),
         MItem("update","检查更新", Icons.Default.Update),
         MItem("about","关于", Icons.Outlined.Info),
     )
+    suspend fun fetchInfo(){
+        val res=safeService { service.info() }
+        res.success?.let {
+            userInfo=userInfo.copy(it.data.nickname,it.data.avatarUrl)
+        }?:run {
+            println("Error ${res.error}")
+        }
+    }
 }

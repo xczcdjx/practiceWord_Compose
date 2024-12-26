@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -39,6 +40,11 @@ import com.xczcdjx.word.viewmodel.MineViewModel
 fun MinePage(
 //    pad: PaddingValues,
     modifier: Modifier = Modifier, vm:MineViewModel= hiltViewModel(), goNext: (v:String) -> Unit = {}) {
+    LaunchedEffect(vm.isLogin) {
+        if (vm.isLogin){
+            vm.fetchInfo()
+        }
+    }
     Box(modifier.fillMaxSize()) {
         val painter =
             if (vm.isLogin) rememberAsyncImagePainter(vm.userInfo.avatarUrl) else painterResource(R.drawable.img_avatar)
@@ -68,7 +74,7 @@ fun MinePage(
                         }
                 )
                 Text(
-                    if (!vm.isLogin) "请登录" else vm.userInfo.username,
+                    if (!vm.isLogin) "请登录" else vm.userInfo.nickname,
                     modifier.padding(vertical = 6.dp)
                 )
                 if(!vm.isLogin) Text("请点击上方头像登录", fontSize = 12.sp)

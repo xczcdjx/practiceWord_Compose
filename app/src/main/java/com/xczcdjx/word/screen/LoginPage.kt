@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xczcdjx.word.R
+import com.xczcdjx.word.entity.LoginFormEntity
+import com.xczcdjx.word.net.Network
+import com.xczcdjx.word.service.LoginService
 import com.xczcdjx.word.share.UserShareView
+import com.xczcdjx.word.utils.safeService
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -61,6 +67,9 @@ fun LoginPage(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var showPass by remember { mutableStateOf(false) }
+
+    val scope= rememberCoroutineScope()
+    val service = LoginService.instance()
 
     BoxWithConstraints(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Image(
@@ -155,8 +164,27 @@ fun LoginPage(
                 )
                 Spacer(modifier.height(8.dp))
                 TextButton({
-                    userVm.updateToken(username + password)
-                    back()
+                    scope.launch {
+                        val res=safeService { service.getCode(username) }
+                            res.success?.let {
+                                password=it.data
+                            }?:run {
+                                println(res.error)
+                        }
+                    }
+                }) { Text("获取验证码", color = Color.White) }
+                Spacer(modifier.height(8.dp))
+                TextButton({
+                    scope.launch {
+                        val res=safeService { service.login(LoginFormEntity(username,password))  }
+                        res.success?.let {
+                            userVm.updateToken(it.data)
+                            Network.setToken(it.data)
+                            back()
+                        }?:run {
+                            println(res.error)
+                        }
+                    }
                 }) { Text("登录", color = Color.White) }
             }
             TextButton({
