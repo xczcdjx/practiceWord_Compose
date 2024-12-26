@@ -33,8 +33,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,11 +40,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.xczcdjx.word.R
+import com.xczcdjx.word.share.UserShareView
 
 @Preview(showBackground = true)
 @Composable
-fun LoginPage(modifier: Modifier = Modifier, back: () -> Unit = {}) {
+fun LoginPage(
+    modifier: Modifier = Modifier,
+    userVm: UserShareView = hiltViewModel(),
+    back: () -> Unit = {}
+) {
     // 获取屏幕宽、高度
     /*var screenWidth: Float
     var screenHeight: Float
@@ -58,7 +62,7 @@ fun LoginPage(modifier: Modifier = Modifier, back: () -> Unit = {}) {
     var password by remember { mutableStateOf("") }
     var showPass by remember { mutableStateOf(false) }
 
-    BoxWithConstraints(modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    BoxWithConstraints(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Image(
             painter = painterResource(R.drawable.bg),
             null,
@@ -151,7 +155,8 @@ fun LoginPage(modifier: Modifier = Modifier, back: () -> Unit = {}) {
                 )
                 Spacer(modifier.height(8.dp))
                 TextButton({
-
+                    userVm.updateToken(username + password)
+                    back()
                 }) { Text("登录", color = Color.White) }
             }
             TextButton({

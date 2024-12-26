@@ -21,7 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xczcdjx.word.share.TextShare
+import com.xczcdjx.word.share.UserShareView
 import com.xczcdjx.word.storage.TestStoreManager
 import com.xczcdjx.word.utils.convertMillToDate
 import com.xczcdjx.word.utils.convertStrToMill
@@ -51,7 +53,7 @@ class TestViewmodel @Inject constructor(
 @Preview(showBackground = true)
 @Composable
 fun Test(
-    modifier: Modifier = Modifier, vm: TestViewmodel = hiltViewModel(), goBack: () -> Unit = {}
+    modifier: Modifier = Modifier, vm: TestViewmodel = hiltViewModel(), vmUser:UserShareView= hiltViewModel(), goBack: () -> Unit = {}
 ) {
     val testStore = TestStoreManager(LocalContext.current)
     val saveName = testStore.getName.collectAsState("ttt")
@@ -67,6 +69,7 @@ fun Test(
         Column(modifier.padding(pad)) {
 //            Text(formatDate("2024-08-31 16:00:00"), fontSize = 30.sp)
             // 日期时间处理
+            Text("user token = ${vmUser.token}")
             Text(formatDate("2024-09-02T11:44:16.266Z"), fontSize = 30.sp)
 //            println(Clock.System.now())
 //            println(formatNow())

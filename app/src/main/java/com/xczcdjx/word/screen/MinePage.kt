@@ -34,6 +34,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.xczcdjx.word.R
 import com.xczcdjx.word.components.MItem
@@ -45,7 +47,7 @@ import com.xczcdjx.word.viewmodel.MineViewModel
 @Preview
 fun MinePage(
 //    pad: PaddingValues,
-    modifier: Modifier = Modifier, vm:MineViewModel= viewModel(), goNext: (v:String) -> Unit = {}) {
+    modifier: Modifier = Modifier, vm:MineViewModel= hiltViewModel(), goNext: (v:String) -> Unit = {}) {
     Box(modifier.fillMaxSize()) {
         Image(
             painter = painterResource(R.drawable.img_avatar),
@@ -61,26 +63,32 @@ fun MinePage(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.clip(CircleShape).size(80.dp)
                         .clickable {
-                            goNext(Routes.Login.route)
+                            if(vm.isLogin){
+                                goNext(Routes.Test.route)
+                            }
+                            else goNext(Routes.Login.route)
                         }
                 )
-                Text("请登录",modifier.padding(vertical = 10.dp))
-                Text("请点击上方头像登录")
+                Text(if(!vm.isLogin)"请登录" else "xczcdjx",modifier.padding(vertical = 6.dp))
+                if(!vm.isLogin) Text("请点击上方头像登录", fontSize = 12.sp)
             }
             Card(modifier.padding(top = 15.dp,).fillMaxSize().clip(
                 RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
             ), colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
-
                 Column(modifier.fillMaxSize().padding(20.dp)) {
                     vm.mineList.forEachIndexed { index, mItem ->
                         MineItem(mItem) {key->
                             println(key)
                         }
                     }
-                    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                        Button({}) {
-                            Text("退出登录")
+                    if(vm.isLogin){
+                        Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                            Button({
+                                vm.user.updateToken("")
+                            }) {
+                                Text("退出登录")
+                            }
                         }
                     }
                 }

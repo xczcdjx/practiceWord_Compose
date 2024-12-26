@@ -1,6 +1,7 @@
 package com.xczcdjx.word.module
 
 import com.xczcdjx.word.share.TextShare
+import com.xczcdjx.word.share.UserShareView
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,4 +14,7 @@ object AppModule {
     @Singleton
     @Provides
     fun tS() = TextShare { "hello" }
+    @Singleton
+    @Provides
+    fun getUser():UserShareView=UserShareView()
 }
