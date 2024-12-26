@@ -41,6 +41,7 @@ import coil3.util.DebugLogger
 import com.xczcdjx.word.constants.BottomTabs
 import com.xczcdjx.word.router.Routes
 import com.xczcdjx.word.screen.Home
+import com.xczcdjx.word.screen.LoginPage
 import com.xczcdjx.word.screen.MinePage
 import com.xczcdjx.word.screen.PostPage
 import com.xczcdjx.word.screen.SplashScreen
@@ -118,17 +119,27 @@ class MainActivity : ComponentActivity() {
                             val goLogin = {
                                 controller.navigate(Routes.Test.route)
                             }
+                            val goNext={
+                                k:String->controller.navigate(k)
+                            }
                             when (actBotKey) {
                                 "study" -> Home(pad, goLogin = goLogin)
                                 "post" -> PostPage(pad, goLogin = goLogin)
                                 else -> {
-                                    MinePage(pad, goLogin = goLogin)
+                                    MinePage(
+//                                        pad,
+                                        goNext = goNext)
                                 }
                             }
                         }
                     }
                     composable(Routes.Test.route) {
                         Test() {
+                            controller.popBackStack()
+                        }
+                    }
+                    composable(Routes.Login.route) {
+                        LoginPage() {
                             controller.popBackStack()
                         }
                     }

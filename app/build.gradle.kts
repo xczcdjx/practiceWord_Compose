@@ -68,6 +68,10 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // 图标库拓展 (该包体积较大)
+    implementation("androidx.compose.material:material-icons-extended:1.7.6")
+
     // 导航库拓展
     implementation("org.jetbrains.androidx.navigation:navigation-compose:2.8.0-alpha11")
     // viewmodel
