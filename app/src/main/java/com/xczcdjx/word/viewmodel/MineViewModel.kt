@@ -30,7 +30,7 @@ class MineViewModel @Inject constructor(val user:UserShareView):ViewModel(){
     suspend fun fetchInfo(){
         val res=safeService { service.info() }
         res.success?.let {
-            userInfo=userInfo.copy(it.data.nickname,it.data.avatarUrl)
+            userInfo=userInfo.copy(it.data.username,it.data.avatarUrl)
         }?:run {
             println("Error ${res.error}")
         }

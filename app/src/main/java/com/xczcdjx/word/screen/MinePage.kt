@@ -74,7 +74,7 @@ fun MinePage(
                         }
                 )
                 Text(
-                    if (!vm.isLogin) "请登录" else vm.userInfo.nickname,
+                    if (!vm.isLogin) "请登录" else vm.userInfo.username,
                     modifier.padding(vertical = 6.dp)
                 )
                 if(!vm.isLogin) Text("请点击上方头像登录", fontSize = 12.sp)
