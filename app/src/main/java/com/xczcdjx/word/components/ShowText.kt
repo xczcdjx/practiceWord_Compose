@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.sp
 fun ShowTest(
     tit: String,
     icon: ImageVector,
+    tintC: Color= Color.Black,
     modifier: Modifier = Modifier,
     child: @Composable RowScope.() -> Unit
 ) {
@@ -29,8 +31,8 @@ fun ShowTest(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, modifier.size(18.dp))
-            Text(tit, modifier.padding(horizontal = 5.dp), fontSize = 15.sp, fontWeight = FontWeight(500))
+            Icon(icon, null, modifier.size(18.dp),tint=tintC)
+            Text(tit, modifier.padding(horizontal = 5.dp), fontSize = 15.sp, fontWeight = FontWeight(500), color = tintC)
         }
         child()
     }

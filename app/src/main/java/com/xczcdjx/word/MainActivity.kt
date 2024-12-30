@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 BottomTabs("打卡", Icons.Filled.DateRange, "post"),
                 BottomTabs("我的", Icons.Filled.Person, "mine"),
             )
-            var actBotKey by remember { mutableStateOf(botItems[0].key) }
+            var actBotKey by remember { mutableStateOf(botItems[1].key) }
             PracticeWordTheme {
                 // 注册图片加载优化
                 setSingletonImageLoaderFactory { context ->

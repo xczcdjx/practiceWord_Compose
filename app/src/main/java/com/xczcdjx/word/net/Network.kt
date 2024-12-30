@@ -14,6 +14,7 @@ import java.io.IOException
 
 object Network {
     private const val baseUrl = "http://192.168.124.47:3000/word/"
+//    private const val baseUrl = "http://192.168.124.47:3203/client/"
     // 用于存储 token
     @Volatile
     private var token: String? = ""
