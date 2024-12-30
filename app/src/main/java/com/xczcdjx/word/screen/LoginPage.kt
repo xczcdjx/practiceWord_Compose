@@ -179,7 +179,6 @@ fun LoginPage(
                         val res=safeService { service.login(LoginFormEntity(username,password))  }
                         res.success?.let {
                             userVm.updateToken(it.data)
-                            Network.setToken(it.data)
                             back()
                         }?:run {
                             println(res.error)

@@ -3,6 +3,7 @@ package com.xczcdjx.word.net
 import android.util.Log
 import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import com.xczcdjx.word.share.UserShareView
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -15,23 +16,15 @@ import java.io.IOException
 object Network {
     private const val baseUrl = "http://192.168.124.47:3000/word/"
 //    private const val baseUrl = "http://192.168.124.47:3203/client/"
-    // 用于存储 token
-    @Volatile
-    private var token: String? = ""
+    // 直接使用share下的token数据
+    lateinit var userShareView: UserShareView
 
-    // 提供一个方法设置 token
-    fun setToken(newToken: String) {
-        token = newToken
-    }
     // 创建一个全局拦截器
     private val globalInterceptor = object : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val request = chain.request()
             val newRequest = request.newBuilder().apply {
-                token?.let {
-//                    header("Authorization", "Bearer $it")
-                    header("token", it) // 添加 Bearer token
-                }
+                header("token", userShareView.token)
             }.build()
             try {
                 val response = chain.proceed(newRequest)

@@ -18,6 +18,7 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,12 +47,16 @@ import com.xczcdjx.word.screen.MinePage
 import com.xczcdjx.word.screen.PostPage
 import com.xczcdjx.word.screen.SplashScreen
 import com.xczcdjx.word.screen.Test
+import com.xczcdjx.word.share.UserShareView
 import com.xczcdjx.word.ui.theme.PracticeWordTheme
 import dagger.hilt.android.AndroidEntryPoint
 import okio.FileSystem
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var userShareView: UserShareView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -61,7 +66,7 @@ class MainActivity : ComponentActivity() {
                 BottomTabs("打卡", Icons.Filled.DateRange, "post"),
                 BottomTabs("我的", Icons.Filled.Person, "mine"),
             )
-            var actBotKey by remember { mutableStateOf(botItems[1].key) }
+            var actBotKey by remember { mutableStateOf(botItems[0].key) }
             PracticeWordTheme {
                 // 注册图片加载优化
                 setSingletonImageLoaderFactory { context ->
@@ -105,7 +110,10 @@ class MainActivity : ComponentActivity() {
                                         Column(
                                             horizontalAlignment = Alignment.CenterHorizontally,
                                             modifier = Modifier.clickable {
-                                                actBotKey = b.key
+                                                if (b.key=="post"&&!userShareView.isLogin) {
+                                                    controller.navigate(Routes.Login.route)
+                                                }
+                                                else actBotKey = b.key
                                             }) {
                                             val c =
                                                 if (b.key == actBotKey) Color.Red else Color.Unspecified
