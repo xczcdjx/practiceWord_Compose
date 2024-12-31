@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.outlined.Countertops
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,6 +36,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +57,7 @@ import com.xczcdjx.word.R
 import com.xczcdjx.word.components.ShowTest
 import com.xczcdjx.word.utils.calcFun
 import com.xczcdjx.word.viewmodel.PostViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun PostPage(
@@ -58,9 +66,33 @@ fun PostPage(
     vm: PostViewModel = hiltViewModel(),
     goLogin: () -> Unit = {}
 ) {
-    val postListUiState by vm.uiState.collectAsState()
+    val postListUiState = vm.uiState
+    val lazyListState= rememberLazyListState()
+    var isLoading by remember { mutableStateOf(false) }
+    var isFinish by remember { mutableStateOf(false) }
+    val scope= rememberCoroutineScope()
     LaunchedEffect(Unit) {
+        vm.resetD()
         vm.fetData()
+    }
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.layoutInfo }
+            .collect { layoutInfo ->
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                val totalItemCount = layoutInfo.totalItemsCount
+                // 当最后一个可见项接近总项数时触发加载
+                if (lastVisibleItemIndex >= totalItemCount - 1 && !isLoading) {
+                    isLoading=true
+                    if (vm.pageModel.total>postListUiState.size){
+                        vm.fetData(){
+                            isLoading=false
+                        }
+                    }else{
+                        isLoading=false
+                        isFinish=true
+                    }
+                }
+            }
     }
     Column(
         modifier = Modifier
@@ -75,11 +107,13 @@ fun PostPage(
             modifier = modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
-        LazyColumn {
+        LazyColumn(state = lazyListState) {
            /* item {
 
             }*/
-            items(postListUiState, key = { it.id }) { p ->
+
+            items(postListUiState.size) { i ->
+                val p=postListUiState[i]
                 Card(
                     modifier
                         .padding(vertical = 8.dp)
@@ -95,7 +129,10 @@ fun PostPage(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(5.dp)
                 ) {
-                    Column(modifier.padding(15.dp).fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+                    Column(
+                        modifier
+                            .padding(15.dp)
+                            .fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
                         Row(modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 val painter =rememberAsyncImagePainter(p.avatarURL)
@@ -112,13 +149,22 @@ fun PostPage(
                             Text(p.createTime, color = Color.Gray)
                         }
                         Text(p.postText, fontSize = 18.sp)
-                        Row(modifier.height(145.dp).fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
-                            Surface(modifier.weight(1f)/*.border(1.dp,Color.Red,
+                        Row(
+                            modifier
+                                .height(145.dp)
+                                .fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                            Surface(
+                                modifier
+                                    .weight(1f)/*.border(1.dp,Color.Red,
                                 RoundedCornerShape(10.dp)
-                            )*/.fillMaxHeight(), color = Color.Transparent,shape = RoundedCornerShape(10.dp),) {
+                            )*/
+                                    .fillMaxHeight(), color = Color.Transparent,shape = RoundedCornerShape(10.dp),) {
                                 Box {
                                     Image(painter = painterResource(R.drawable.img_post_bg),null, modifier = modifier.fillParentMaxSize())
-                                    Column(modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
+                                    Column(
+                                        modifier
+                                            .fillMaxSize()
+                                            .padding(20.dp), verticalArrangement = Arrangement.SpaceBetween) {
                                         val c=Color.White
                                         ShowTest("用时", Icons.Outlined.Timer, tintC = c) {
                                             Text(
@@ -145,11 +191,46 @@ fun PostPage(
                             Column(modifier.width(50.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                                 val c=if(p.isLike==1)Color(0xFF84DCC1) else Color.Gray
                                 Text(p.likeCount.toString(), color = c)
-                                Icon(Icons.Default.Favorite,null, tint = c, modifier = modifier.size(25.dp).clickable {
-
-                                })
+                                Icon(Icons.Default.Favorite,null, tint = c, modifier = modifier
+                                    .size(25.dp)
+                                    .clickable {
+                                        scope.launch {
+                                            vm.likeControl(p.isLike==1,p.id,p.likeCount)
+                                        }
+                                    })
                             }
                         }
+                    }
+                }
+            }
+            if (isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            if (isFinish){
+                item {
+                    if (postListUiState.isEmpty()){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column {
+                                CircularProgressIndicator()
+                                Text("加载中",modifier.padding(vertical = 15.dp))
+                            }
+                        }
+                    }else{
+                        Text("没有更多了...",modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                     }
                 }
             }
