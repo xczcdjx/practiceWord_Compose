@@ -8,7 +8,7 @@ data class DataG<T> (
 ):PostResData()
 data class PostModelEntity(
     val page:Int=1,
-    val size:Int?=null,
+    val size:Int=10,
     val total:Int=0
 )
 open class PostResData {
@@ -29,5 +29,5 @@ data class PostItemEntity(
     @Json(name="avatarUrl")
     val avatarURL: String,
 
-    val isLike: Boolean
+    val isLike: Int
 )

@@ -7,10 +7,10 @@ import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Query
 interface PostService {
-    @GET("openCdn/search")
+    @GET("post/getAll")
     suspend fun search(
-        @Query("page") page:Int?=null,
-        @Query("size") size:Int?=null,
+        @Query("page") page:Int,
+        @Query("size") size:Int,
     ): PostEntity
     companion object {
         fun instance():PostService=Network.createService(PostService::class.java)

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel
 import com.xczcdjx.word.constants.AnswerStatusEnum
 import com.xczcdjx.word.constants.StatusEnumBtn
 import com.xczcdjx.word.constants.getRandomQuestions
+import com.xczcdjx.word.utils.calcFun
 import kotlinx.coroutines.delay
 import java.util.Locale
 import java.util.Timer
@@ -34,7 +35,7 @@ class HomeViewmodel(private val ctx: Context) : ViewModel() {
     var selectC: String by mutableStateOf("")
         private set
     val rightRate by derivedStateOf {
-        if (answerC == 0) "0" else String.format("%.2f", rightC.toFloat() / answerC * 100)
+        calcFun.getRate(rightC,answerC)
     }
     var expandTime= mutableLongStateOf(0L)
 

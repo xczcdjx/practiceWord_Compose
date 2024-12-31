@@ -20,12 +20,13 @@ class PostViewModel @Inject constructor(val user: UserShareView) : ViewModel() {
     private val _uiState = MutableStateFlow(mutableListOf<PostItemEntity>())
     val uiState: StateFlow<List<PostItemEntity>> = _uiState.asStateFlow()
     val pageModel by mutableStateOf(PostModelEntity())
-    val instance = PostService.instance()
+    private val instance = PostService.instance()
     suspend fun fetData() {
         val (page, size) = pageModel
         val res = safeService { instance.search(page, size) }
         res.success?.let { d ->
-            _uiState.value.addAll(d.data.records)
+            _uiState.value = _uiState.value.toMutableList().apply { addAll(d.data.records) }
+            println(_uiState.value)
             pageModel.copy(page = page + 1, size = d.data.size, total = d.data.total)
         }?:run {
             LoggerUtil.error(res.error)
